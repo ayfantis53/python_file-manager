@@ -31,7 +31,7 @@ class Communications:
         client.listen()  # TODO: Delete
 
         # Are we primary? If not we dont run copy.
-        global is_primary # TODO: GLobal variables need to be fixed after classes have been broken out.
+        global is_primary  # TODO: GLobal variables need to be fixed after classes have been broken out.
 
         # Control flow statement used to create an infinite loop.
         while True:

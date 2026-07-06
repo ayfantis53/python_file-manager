@@ -49,7 +49,7 @@ build:
 
 # Clean up build artifacts.
 clean:
-	rm -rf .ruff_cache .pytest_cache .venv tests/__pycache__ /src/file_manager.egg-info tests/test_data/ src/__pycache__ src/file_manager.egg-info src/modules/__pycache__
+	rm -rf .ruff_cache .pytest_cache .venv tests/__pycache__ /src/file_manager.egg-info tests/test_data/ src/__pycache__ src/file_manager.egg-info src/modules/__pycache__ && clear
 # Clean up docker.
 clean-docker:
 	docker rmi file_manager:${TAG}

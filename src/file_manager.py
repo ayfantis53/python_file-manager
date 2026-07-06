@@ -189,7 +189,7 @@ def thread_daemon(vars: FileManagerInit, comms: Communications) -> None:
 
         # Going to be our health variable to send to APP 2 SUCCESS, 1 DEGRADED, 0 FAIL.
         b_status[path] = vars.green
-    
+
     # Control flow statement used to create an infinite loop.
     while True:
         # Get time to put in logs and save to know what files are new to copy.

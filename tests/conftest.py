@@ -20,14 +20,21 @@ from src.file_manager import file_copied_management
 # ================
 
 
-def test_json_setup_config_vars(var_1: int, var_2: str, var_3: int, var_4: str, file_manager_init,) -> bool:
+def test_json_setup_config_vars(
+    var_1: int,
+    var_2: str,
+    var_3: int,
+    var_4: str,
+    file_manager_init,
+) -> bool:
     """Make sure config variables have correct values.
 
     Args:
-         var_1 (int): Port number to be tested.
-         var_2 (str): Host name to be tested.
-         var_3 (int): Frequency checks number to be tested.
-         var_4 (str): Logfile path to be tested.
+         var_1 (int):                Port number to be tested.
+         var_2 (str):                Host name to be tested.
+         var_3 (int):                Frequency checks number to be tested.
+         var_4 (str):                Logfile path to be tested.
+         file_manager_init (object): Class to setup file_manager.
 
     Returns:
         (bool)
@@ -52,14 +59,21 @@ def test_json_setup_config_vars(var_1: int, var_2: str, var_3: int, var_4: str, 
         return False
 
 
-def test_json_setup_path_vars(var_1: str, var_2: int, var_3: str, var_4: int, file_manager_init,) -> bool:
+def test_json_setup_path_vars(
+    var_1: str,
+    var_2: int,
+    var_3: str,
+    var_4: int,
+    file_manager_init,
+) -> bool:
     """Make sure config variables have correct values.
 
     Args:
-         var_1 (str): data directory borep path to be tested.
-         var_2 (int): Leniency borep number value to be tested.
-         var_3 (str): data directory eph path to be tested.
-         var_4 (int): Leniency eph number value to be tested.
+         var_1 (str):                data directory borep path to be tested.
+         var_2 (int):                Leniency borep number value to be tested.
+         var_3 (str):                data directory eph path to be tested.
+         var_4 (int):                Leniency eph number value to be tested.
+         file_manager_init (object): Class to setup file_manager.
 
     Returns:
         (bool)
@@ -89,7 +103,14 @@ def test_json_setup_path_vars(var_1: str, var_2: int, var_3: str, var_4: int, fi
 # ================
 
 
-def test_file_copied_management(data_dir, dir, last_time, index, year, file_manager_init,) -> bool:
+def test_file_copied_management(
+    data_dir,
+    dir,
+    last_time,
+    index,
+    year,
+    file_manager_init,
+) -> bool:
     """Check if after copy both directories have same number of files in them.
 
     Args:
@@ -98,6 +119,7 @@ def test_file_copied_management(data_dir, dir, last_time, index, year, file_mana
         last_time (int):
         index (int):
         year (int):
+        file_manager_init (object): Class to setup file_manager.
 
     Returns:
         (bool)
@@ -107,7 +129,6 @@ def test_file_copied_management(data_dir, dir, last_time, index, year, file_mana
     data = file_manager_init.json_parse("DATA_PATHS")
 
     nas = data[index].get("NAS_DIR")
-    bore_data = data[0].get(data_dir)
     eph_data = data[1].get(data_dir)
 
     # Add _year to directory if needed based on config.
@@ -154,7 +175,8 @@ def test_file_retention_management(dir_index, file_manager_init) -> bool:
     """Test we are deleting outdated index 0 or 1 files correctly.
 
     Args:
-        index (int): Which data directory we are checking for expired files (0: borep, 1: eph).
+        index (int):                Data directory we check for expired files in (0: borep, 1: eph).
+        file_manager_init (object): Class to setup file_manager.
 
     Returns:
         (bool)
@@ -185,7 +207,7 @@ def test_file_retention_management(dir_index, file_manager_init) -> bool:
 @pytest.fixture(scope="class")
 def inject_helpers(request):
     """
-    Binds shared helper utilities and data generators 
+    Binds shared helper utilities and data generators
     directly to the invoking unittest.TestCase class context.
     """
     # Bind the functions to the class object.
@@ -193,7 +215,9 @@ def inject_helpers(request):
     request.cls.test_json_setup_path_vars = staticmethod(test_json_setup_path_vars)
     request.cls.test_file_copied_management = staticmethod(test_file_copied_management)
     request.cls.test_data_create = staticmethod(test_data_create)
-    request.cls.test_file_retention_management = staticmethod(test_file_retention_management)
-    
+    request.cls.test_file_retention_management = staticmethod(
+        test_file_retention_management
+    )
+
     # You can also bind class-cached mock databases or client systems.
     request.cls.shared_constant = "APP_TEST_ENV"

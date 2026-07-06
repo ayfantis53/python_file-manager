@@ -38,7 +38,13 @@ class TestJSON(unittest.TestCase):
         """Test that our config variables are being read correctly."""
         print("TESTED JSON CORRECT VALUES")
 
-        result_1 = self.test_json_setup_config_vars(9090, "localhost", 0.5, "../test/logs/", FILE_MANAGER_INIT,)
+        result_1 = self.test_json_setup_config_vars(
+            9090,
+            "localhost",
+            0.5,
+            "../test/logs/",
+            FILE_MANAGER_INIT,
+        )
         result_2 = self.test_json_setup_path_vars(
             "./test/test_data/Data_borep",
             1,
@@ -59,9 +65,19 @@ class TestJSON(unittest.TestCase):
         """Test that our config variables recognize incorrect values."""
         print("TESTED JSON NOT-CORRECT VALUES")
 
-        result_1 = self.test_json_setup_config_vars(8080, "lochost", 5, "./test/logs/", FILE_MANAGER_INIT,)
+        result_1 = self.test_json_setup_config_vars(
+            8080,
+            "lochost",
+            5,
+            "./test/logs/",
+            FILE_MANAGER_INIT,
+        )
         result_2 = self.test_json_setup_path_vars(
-            "./test/test_data/Data_repars", 12, "./test/test_data/Daa_epheeris", 1, FILE_MANAGER_INIT, 
+            "./test/test_data/Data_repars",
+            12,
+            "./test/test_data/Daa_epheeris",
+            1,
+            FILE_MANAGER_INIT,
         )
 
         # Were the values in the json correct?
