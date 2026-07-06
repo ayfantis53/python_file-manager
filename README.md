@@ -1,4 +1,4 @@
-## DSP Support Data Copy No Protobuf implementation
+## File Manager Copy No Protobuf implementation
 -------------------------------------------------------------------------
 - App copies files from a data directory to a destination (NAS) directory
 
