@@ -1,6 +1,6 @@
 """Imitates HSD Sending message."""
 
-# Standard Library Imports
+# Standard lib imports
 import socket
 
 

@@ -1,6 +1,6 @@
 """Test code."""
 
-# Standard Library Imports
+# Standard Library imports
 import datetime
 import filecmp
 import glob
@@ -11,7 +11,7 @@ import unittest
 
 sys.path.append("..")
 
-# Local Imports
+# Local imports
 from src.file_manager import file_copied_management
 from src.file_manager import file_retention_management
 from src.modules.file_manage_init import FileManagerInit
@@ -42,9 +42,9 @@ class TestJSON(unittest.TestCase):
 
         result_1 = test_json_setup_config_vars(9090, "localhost", 0.5, "../test/logs/")
         result_2 = test_json_setup_path_vars(
-            "../test/test_data/Data_borep",
+            "./test/test_data/Data_borep",
             1,
-            "../test/test_data/Data_ep",
+            "./test/test_data/Data_ep",
             1,
         )
 
@@ -62,7 +62,7 @@ class TestJSON(unittest.TestCase):
 
         result_1 = test_json_setup_config_vars(8080, "lochost", 5, "./test/logs/")
         result_2 = test_json_setup_path_vars(
-            "../test/test_data/Data_repars", 12, "../test/test_data/Daa_epheeris", 1
+            "./test/test_data/Data_repars", 12, "./test/test_data/Daa_epheeris", 1
         )
 
         # Were the values in the json correct?
@@ -149,14 +149,14 @@ class TestRetention(unittest.TestCase):
 # ================
 
 
-def test_json_setup_config_vars(var1: int, var2: str, var3: int, var4: str):
+def test_json_setup_config_vars(var_1: int, var_2: str, var_3: int, var_4: str) -> bool:
     """Make sure config variables have correct values.
 
     Args:
-         var1 (int): Port number to be tested.
-         var2 (str): Host name to be tested.
-         var3 (int): Frequency checks number to be tested.
-         var4 (str): Logfile path to be tested.
+         var_1 (int): Port number to be tested.
+         var_2 (str): Host name to be tested.
+         var_3 (int): Frequency checks number to be tested.
+         var_4 (str): Logfile path to be tested.
 
     Returns:
         (bool)
@@ -171,24 +171,24 @@ def test_json_setup_config_vars(var1: int, var2: str, var3: int, var4: str):
     config_logs = config_variables.get("LOGFILE_PATH")
 
     if (
-        config_port == var1
-        and config_host == var2
-        and config_freq == var3
-        and config_logs == var4
+        config_port == var_1
+        and config_host == var_2
+        and config_freq == var_3
+        and config_logs == var_4
     ):
         return True
     else:
         return False
 
 
-def test_json_setup_path_vars(var1: str, var2: int, var3: str, var4: int):
+def test_json_setup_path_vars(var_1: str, var_2: int, var_3: str, var_4: int) -> bool:
     """Make sure config variables have correct values.
 
     Args:
-         var1 (str): data directory borep path to be tested.
-         var2 (int): Leniency borep number value to be tested.
-         var3 (str): data directory eph path to be tested.
-         var4 (int): Leniency eph number value to be tested.
+         var_1 (str): data directory borep path to be tested.
+         var_2 (int): Leniency borep number value to be tested.
+         var_3 (str): data directory eph path to be tested.
+         var_4 (int): Leniency eph number value to be tested.
 
     Returns:
         (bool)
@@ -203,10 +203,10 @@ def test_json_setup_path_vars(var1: str, var2: int, var3: str, var4: int):
     config_lene = config_paths[1].get("LENIENCY")
 
     if (
-        config_bore == var1
-        and config_lenb == var2
-        and config_ephe == var3
-        and config_lene == var4
+        config_bore == var_1
+        and config_lenb == var_2
+        and config_ephe == var_3
+        and config_lene == var_4
     ):
         return True
     else:
@@ -218,11 +218,11 @@ def test_json_setup_path_vars(var1: str, var2: int, var3: str, var4: int):
 # ================
 
 
-def test_file_copied_management(json, dir, last_time, index, year):
+def test_file_copied_management(data_dir, dir, last_time, index, year) -> bool:
     """Check if after copy both directories have same number of files in them.
 
     Args:
-        json (str):
+        data_dir (str):
         dir (str):
         last_time (int):
         index (int):
@@ -236,8 +236,8 @@ def test_file_copied_management(json, dir, last_time, index, year):
     data = FILE_MANAGER_INIT.json_parse("DATA_PATHS")
 
     nas = data[index].get("NAS_DIR")
-    bore_data = data[0].get(json)
-    eph_data = data[1].get(json)
+    bore_data = data[0].get(data_dir)
+    eph_data = data[1].get(data_dir)
 
     # Add _year to directory if needed based on config.
     if data[index].get(FILE_MANAGER_INIT.year):
@@ -259,7 +259,7 @@ def test_file_copied_management(json, dir, last_time, index, year):
         return False
 
 
-def test_data_create(dir: str, max: int) -> None:
+def test_data_create(data_dir: str, max: int) -> None:
     """Create directory with test files to copy.
 
     Args:
@@ -267,10 +267,10 @@ def test_data_create(dir: str, max: int) -> None:
         max (int): Number of test files to make in the directory
     """
     # Create the directory and any missing parent directories
-    Path(dir).mkdir(parents=True, exist_ok=True)
+    Path(data_dir).mkdir(parents=True, exist_ok=True)
 
     for item in range(0, max):
-        f = open(dir + "/" + "item_" + str(item), "w")
+        f = open(data_dir + "/" + "item_" + str(item), "w")
         f.close()
 
 
@@ -279,7 +279,7 @@ def test_data_create(dir: str, max: int) -> None:
 # ================
 
 
-def test_file_retention_management(index):
+def test_file_retention_management(dir_index) -> bool:
     """Test we are deleting outdated index 0 or 1 files correctly.
 
     Args:
@@ -292,8 +292,8 @@ def test_file_retention_management(index):
     """
     config_paths = FILE_MANAGER_INIT.json_parse("DATA_PATHS")
 
-    data_dir = config_paths[index].get("DATA_DIR")
-    leniency_time = config_paths[index].get("LENIENCY")
+    data_dir = config_paths[dir_index].get("DATA_DIR")
+    leniency_time = config_paths[dir_index].get("LENIENCY")
 
     current_time = datetime.datetime.now()
     retention_time = current_time - datetime.timedelta(minutes=leniency_time)

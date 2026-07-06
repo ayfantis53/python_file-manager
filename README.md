@@ -29,6 +29,13 @@ ruff config
 > When Running test copy and test retention testing suites look in `tests/test-data` for results.
 > Comment out file_manage init lines `72` and `73` at current moment.
 ```bash
+# Run in 1st terminal.
+uv run src/utils/server.py
+```
+
+```bash
+# Run in 2nd terminal.
+
 # Run all tests:
 uv run pytest ||  make test
 
@@ -49,18 +56,10 @@ uv run pytest tests/test_file_manager.py::TestJSON::test_json_SUCCESS
 
 ```bash
 # Run in 1st terminal.
-uv run server.py
+uv run src/utils/server.py
 
 # Run in 2nd terminal.
 uv run  src/file_manager.py
-```
-
-```bash
-# Run in 1st terminal.
-uv run server.py
-
-# Run in 2nd terminal.
-uv run src/utils/test_file_manager.py
 ```
 
 ### Running App with Docker

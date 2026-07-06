@@ -1,11 +1,11 @@
 """Setup File manager class."""
 
-# Standard Library Imports
+# Standard lib imports
 import json
 from pathlib import Path
 import socket
 
-# Local Imports
+# Local imports
 from modules.log_manager import LogManager
 
 

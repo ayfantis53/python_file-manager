@@ -6,7 +6,7 @@
 .ruff_cache
 
 # testing
-./tests/test-data
+tests/test_data
 
 # Python build
 .venv/

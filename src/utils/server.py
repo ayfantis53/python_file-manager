@@ -1,6 +1,6 @@
 """Server for recieving messages."""
 
-# Standard Library Imports
+# Standard lib imports
 import socket
 
 

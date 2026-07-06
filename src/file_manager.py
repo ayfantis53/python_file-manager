@@ -1,6 +1,6 @@
 """Copies files from one file to another based on send flag."""
 
-# Standard Library Imports
+# Standard lib imports
 import os
 import sys
 import glob
@@ -9,7 +9,7 @@ import shutil
 import datetime
 from threading import Thread, Lock
 
-# Local Imports
+# Local imports
 from modules.communications import Communications
 from modules.file_manage_init import FileManagerInit
 

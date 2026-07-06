@@ -1,6 +1,6 @@
 """Send messages through ports from client to server."""
 
-# Standard Library Imports
+# Standard lib imports
 import socket
 from threading import Lock
 

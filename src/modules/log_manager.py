@@ -1,6 +1,6 @@
 """Sets up and manages the logfile of output from app running."""
 
-# Standard Library Imports
+# Standard lib imports
 import logging
 from pathlib import Path
 
