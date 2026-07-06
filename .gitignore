@@ -5,6 +5,9 @@
 # Ruff outputs
 .ruff_cache
 
+# testing
+./tests/test-data
+
 # Python build
 .venv/
 .pytest*

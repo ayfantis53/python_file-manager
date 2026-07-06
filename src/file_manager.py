@@ -27,10 +27,10 @@ def file_retention_management(index: int, vars: dict, year: int) -> None:
         vars (dict):       Data from config file.
         year (int):        Year of the file creation.
     """
-    data_dir = vars.paths[index].get(vars.MESSAGE_DIR)
+    data_dir = vars.paths[index].get(vars.message_dir)
 
     # Add _year to directory if needed based on config.
-    if vars.paths[index].get(vars.YEAR):
+    if vars.paths[index].get(vars.year):
         data_dir = str(data_dir) + "_" + str(year)
 
     # make sure file exists and that it wasnt previously copied in the last run.
@@ -85,11 +85,11 @@ def file_copied_management(
             returns the current local date and time as a datetime object.
             returns exit code.
     """
-    nas_dir = vars.paths[index].get(vars.NAS_DIR)
-    data_dir = vars.paths[index].get(vars.MESSAGE_DIR)
+    nas_dir = vars.paths[index].get(vars.nas_dir)
+    data_dir = vars.paths[index].get(vars.message_dir)
 
     # Add _year to directory if needed based on config.
-    if vars.paths[index].get(vars.YEAR):
+    if vars.paths[index].get(vars.year):
         data_dir = str(data_dir) + "_" + str(year)
         nas_dir = str(nas_dir) + "_" + str(year)
 

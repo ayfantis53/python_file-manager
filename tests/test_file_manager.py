@@ -1,12 +1,13 @@
 """Test code."""
 
 # Standard Library Imports
+import datetime
+import filecmp
+import glob
 import os
 import sys
-import glob
-import filecmp
+from pathlib import Path
 import unittest
-import datetime
 
 sys.path.append("..")
 
@@ -83,11 +84,12 @@ class TestCopy(unittest.TestCase):
         current_time = datetime.datetime.now()
 
         last_time_bore = datetime.datetime.min
-        test_data_create("./test_data/Data_borep", 3)
+        test_data_create("./tests/test_data/Data_borep", 3)
+        test_data_create("./tests/test_data/NAS_bore", 0)
 
         result = test_file_copied_management(
             "DATA_DIR",
-            "./test_data/Data_borep",
+            "./tests/test_data/Data_borep",
             last_time_bore,
             0,
             current_time.year,
@@ -101,11 +103,12 @@ class TestCopy(unittest.TestCase):
         current_time = datetime.datetime.now()
 
         last_time_eph = datetime.datetime.min
-        test_data_create("./test_data/Data_ep_2023", 3)
+        test_data_create("./tests/test_data/Data_ep_2026", 3)
+        test_data_create("./tests/test_data/NAS_eph_2026", 0)
 
         result = test_file_copied_management(
             "DATA_DIR",
-            "./test_data/Data_ep_2023",
+            "./tests/test_data/Data_ep_2026",
             last_time_eph,
             1,
             current_time.year,
@@ -237,17 +240,9 @@ def test_file_copied_management(json, dir, last_time, index, year):
     eph_data = data[1].get(json)
 
     # Add _year to directory if needed based on config.
-    if data[index].get(FILE_MANAGER_INIT.YEAR):
+    if data[index].get(FILE_MANAGER_INIT.year):
         nas = str(nas) + "_" + str(year)
     eph_data = str(eph_data) + "_" + str(year)
-
-    # Delete current files in NAS directories.
-    for f in os.listdir(nas):
-        os.remove(os.path.join(nas, f))
-    for f in os.listdir(bore_data):
-        os.remove(os.path.join(bore_data, f))
-    for f in os.listdir(eph_data):
-        os.remove(os.path.join(eph_data, f))
 
     # Run copy function from file_manager.
     file_copied_management(last_time, index, FILE_MANAGER_INIT, year)
@@ -271,6 +266,9 @@ def test_data_create(dir: str, max: int) -> None:
         dir (str): Path to data directory.
         max (int): Number of test files to make in the directory
     """
+    # Create the directory and any missing parent directories
+    Path(dir).mkdir(parents=True, exist_ok=True)
+
     for item in range(0, max):
         f = open(dir + "/" + "item_" + str(item), "w")
         f.close()

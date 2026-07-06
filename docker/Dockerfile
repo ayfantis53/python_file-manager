@@ -54,7 +54,7 @@ WORKDIR /opt/app/
 COPY conf /opt/app/conf
 COPY src /opt/app/src
 COPY tests /opt/app/tests
-COPY pyproject.toml uv.lock /opt/app/
+COPY pyproject.toml uv.lock Makefile /opt/app/
 
 
 # =========

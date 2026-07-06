@@ -33,14 +33,14 @@ test:
 	uv run pytest
 
 # Run App.
-up:
-	TAG=${TAG}
+run:
+	docker run --rm -it --entrypoint=bash file_manager:${TAG}
 down:
 	TAG=${TAG}
 
 # --- Build Targets ---
 build:
-	TAG=${TAG}
+	docker build -f docker/Dockerfile -t file_manager:${TAG} .
 
 
 # ===========
@@ -52,7 +52,10 @@ build:
 
 # Clean up build artifacts
 clean:
-	rm -rf .ruff_cache python_file_manager/.pytest_cache python_file_manager/.venv python_file_manager/tests/__pycache__ python_file_manager/src/file_manager.egg-info
+	rm -rf .ruff_cache .pytest_cache .venv tests/__pycache__ /src/file_manager.egg-info tests/test_data/ src/__pycache__ src/file_manager.egg-info src/modules/__pycache__
+# Clean up docker
+clean-docker:
+	docker rmi file_manager:${TAG}
 
 # Self-documenting help target 
 help:

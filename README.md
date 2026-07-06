@@ -25,6 +25,24 @@ ruff config
 ```
 
 
+## Running Unit Tests
+> When Running test copy and test retention testing suites look in `tests/test-data` for results.
+> Comment out file_manage init lines `72` and `73` at current moment.
+```bash
+# Run all tests:
+uv run pytest ||  make test
+
+# Run single test file:
+uv run pytest tests/test_file_manager.py
+
+# Run single test suite:
+uv run pytest tests/test_file_manager.py::TestJSON
+
+# Run single test:
+uv run pytest tests/test_file_manager.py::TestJSON::test_json_SUCCESS
+```
+
+
 ## Running Code
 
 ### Running App Locally
@@ -45,25 +63,18 @@ ruff config
 
 ```bash
 # Build container from image.
-docker build -f docker/Dockerfile -t file_manager:local-build .
+docker build -f docker/Dockerfile -t file_manager:local-build . ||  make build
 
 # Run container from image.
-docker run --rm -it --entrypoint=bash file_manager:local-build
+docker run --rm -it --entrypoint=bash file_manager:local-build ||  make run
 ```
 
-
-## Running Unit Tests
+## Cleanup
 
 ```bash
-# Run all tests:
-uv run pytest
+# Gets rid of all directories made by python or uv.
+make clean
 
-# Run single test file:
-uv run pytest tests/test_file_manager.py
-
-# Run single test suite:
-uv run pytest tests/test_file_manager.py::TestJSON
-
-# Run single test:
-uv run pytest tests/test_file_manager.py::TestJSON::test_json_SUCCESS
+# Get rid of built docker image
+make clean-docker
 ```
