@@ -7,25 +7,25 @@ from threading import Lock
 
 class Communications:
     """Handles recieving and sending messages using ports.
-    
+
     Attributes:
         mutex (Lock) synchronization primitive object designed to handle mutual exclusion.
     """
 
     def __init__(self, mutex: Lock) -> None:
         """Class that initializes variables for file manager to run.
-        
+
         Args:
             mutex (Lock) synchronization primitive object designed to handle mutual exclusion.
         """
         self.mutex = mutex
 
     def rec_proto(self, vars) -> None:
-        """ Connect to Socket and Receive Protobuf Message."""
+        """Connect to Socket and Receive Protobuf Message."""
 
-        client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)      # TODO: Delete
-        client.bind((vars.HOST, 8089))                                  # TODO: Delete
-        client.listen()                                                 # TODO: Delete
+        client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # TODO: Delete
+        client.bind((vars.HOST, 8089))  # TODO: Delete
+        client.listen()  # TODO: Delete
 
         # Are we primary? If not we dont run copy.
         global is_primary
@@ -39,7 +39,7 @@ class Communications:
                 vars.logger.info("Listening on port: " + str(address))
 
                 # Receive primary message from Application and deserialize
-                message_isPrimary = communication_socket.recv(1024).decode('utf-8')
+                message_isPrimary = communication_socket.recv(1024).decode("utf-8")
 
                 if message_isPrimary == "isprimary":
                     is_primary = True
@@ -54,7 +54,7 @@ class Communications:
 
     def send_proto(self, b_status: list[bool], vars: dict) -> None:
         """Connect to Socket and Send Protobuf Message.
-        
+
         Args:
             b_status (list[bool]): List of the health of all files.
             vars (dict):           Data from config file.
@@ -75,6 +75,8 @@ class Communications:
                 state = vars.YELLOW
                 log_state = "YELLOW"
 
-        vars.client.send(log_state.encode('utf-8'))
+        vars.client.send(log_state.encode("utf-8"))
 
-        vars.logger.info("Sent health message of -------------------------------- " + log_state)
+        vars.logger.info(
+            "Sent health message of -------------------------------- " + log_state
+        )
