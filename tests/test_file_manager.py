@@ -174,7 +174,7 @@ def test_file_copied_management(json, dir, last_time, index, year):
     for f in os.listdir(eph_data):
         os.remove(os.path.join(eph_data, f))
 
-    # Run copy function from DSDC
+    # Run copy function from file_manager.
     file_copied_management(last_time, index, file_manager_init, year)
 
     # Compare both directories
