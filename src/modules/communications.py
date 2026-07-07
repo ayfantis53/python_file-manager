@@ -24,14 +24,18 @@ class Communications:
         self.is_primary = True
         self.ran_once = False
 
-    def rec_proto(self, vars) -> None:
-        """Connect to Socket and Receive Protobuf Message."""
+    def rec_proto(self, conf_vars) -> None:
+        """Connect to Socket and Receive Protobuf Message.
+        
+        Args:
+            conf_vars (dict): Data from config file.
+        """
 
         # Initialize new network socket object using IPv4 address family & TCP transport protocol.
         # Attach a client socket to a specific local IP address and port.
         # Put socket into a passive state, signal the operating system kernel to queue incoming connection requests.
         client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # TODO: Delete
-        client.bind((vars.host, 8089))  # TODO: Delete
+        client.bind((conf_vars.host, 8089))  # TODO: Delete
         client.listen()  # TODO: Delete
 
         # Control flow statement used to create an infinite loop.
@@ -43,7 +47,8 @@ class Communications:
             try:
                 # Wait for incoming connection, when connected, return new socket object.
                 communication_socket, address = client.accept()
-                vars.logger.info("Listening on port: " + str(address))
+                client_ip, client_port = address
+                conf_vars.logger.info("Listening on port: %s on %s port", client_ip, client_port)
 
                 # Receive primary message from Application and deserialize.
                 message_isPrimary = communication_socket.recv(1024).decode("utf-8")
@@ -55,49 +60,51 @@ class Communications:
                 # Is NOT primary.
                 else:
                     self.is_primary = False
-                    vars.logger.warning("is NO longer primary.")
+                    conf_vars.logger.warning("is NO longer primary.")
             # -- Handles remote server or peer forcefully close on an active network connection unexpectedly --.
             except ConnectionResetError:
-                print("Client closed the connection unexpectedly.")
+                conf_vars.logger.error("Client closed the connection unexpectedly.")
             # -- Handles system-related, i.e. Input/Output, missing file, or network/permission error --.
             except OSError as err:
-                print(f"Socket error occurred: {err}")
+                conf_vars.logger.error("Socket error occurred: %s", err)
             # -- Guaranteed to run under all circumstances --.
             finally:
                 # Release mutually exclusive lock (mutex) so other waiting threads can access shared resources.
                 self.mutex.release()
 
-            vars.logger.info("Connection with " + str(address) + " ended")
+            # terminates network connection & releases system resources allocated to that specific socket descriptor.
+            conf_vars.logger.info("Connection with %s on port %s closed", client_ip, client_port)
             communication_socket.close()
 
-    def send_proto(self, b_status: list[bool], vars: dict) -> None:
+    def send_proto(self, b_status: list[bool], conf_vars: dict) -> None:
         """Connect to Socket and Send Protobuf Message.
 
         Args:
             b_status (list[bool]): List of the health of all files.
-            vars (dict):           Data from config file.
+            conf_vars (dict):      Data from config file.
         """
-        vars.logger.info("Connected to port " + str(vars.port))
+        conf_vars.logger.info("Connected to port %d", conf_vars.port)
 
         # Initialize Health message.
-        state = vars.green
+        state = conf_vars.green
         log_state = "GREEN"
 
         # Health message.
         for status in range(len(b_status)):
             # Status is Unhealthy.
-            if b_status[status] == vars.red:
-                state = vars.red
+            if b_status[status] == conf_vars.red:
+                state = conf_vars.red
                 log_state = "RED"
                 break
             # Status is Degraded.
-            elif b_status[status] == vars.yellow and state != vars.red:
-                state = vars.yellow
+            elif b_status[status] == conf_vars.yellow and state != conf_vars.red:
+                state = conf_vars.yellow
                 log_state = "YELLOW"
 
         # Transmit data over a network.
-        vars.client.send(log_state.encode("utf-8"))
+        conf_vars.client.send(log_state.encode("utf-8"))
 
-        vars.logger.info(
-            "Sent health message of -------------------------------- " + log_state
+        conf_vars.logger.info(
+            "Sent health message of -------------------------------- %s",
+            log_state,
         )

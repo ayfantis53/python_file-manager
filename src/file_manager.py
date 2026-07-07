@@ -20,23 +20,23 @@ from modules.parse_args import parse_args
 mutex = Lock()
 
 
-def file_retention_management(index: int, vars: dict, year: int) -> None:
+def file_retention_management(index: int, conf_vars: dict, year: int) -> None:
     """Delete files that are past leniency times.
 
     Args:
-        index (int):       File iteration we're on when looping through directory.
-        vars (dict):       Data from config file.
-        year (int):        Year of the file creation.
+        index (int):      File iteration we're on when looping through directory.
+        conf_vars (dict): Data from config file.
+        year (int):       Year of the file creation.
     """
-    data_dir = vars.paths[index].get(vars.message_dir)
+    data_dir = conf_vars.paths[index].get(conf_vars.message_dir)
 
     # Add "_year" to directory if needed based on config.
-    if vars.paths[index].get(vars.year):
+    if conf_vars.paths[index].get(conf_vars.year):
         data_dir = str(data_dir) + "_" + str(year)
 
     # File exists and that it wasnt previously copied in the last run.
     if os.path.exists(data_dir):
-        leniency_time = vars.paths[index].get("LENIENCY")
+        leniency_time = conf_vars.paths[index].get("LENIENCY")
 
         # turning leniency time in minutes to a datetime format to be compared.
         current_time = datetime.datetime.now()
@@ -56,29 +56,31 @@ def file_retention_management(index: int, vars: dict, year: int) -> None:
                 # -- Attempt to delete a specific file path from the filesystem --.
                 try:
                     os.remove(m_file)
-                    vars.logger.info(
-                        "File [" + str(m_file) + "] deleted because it was outdated"
+                    conf_vars.logger.info(
+                        "File [\"%s\"] deleted because it was outdated",
+                        m_file,
                     )
                 # -- Handles access/manipulating file that does not exist at path --.
                 except FileNotFoundError as err:
-                    vars.logger.error(f"File Not found {err}.")
+                    conf_vars.logger.error("File Not found %s.", err)
                 # -- Handles performing an operation on file without access privileges --.
                 except PermissionError:
-                    print("Do NOT have permission to delete this file.")
+                    conf_vars.logger.error("Do NOT have permission to delete this file.")
                 # -- Handles system-related, i.e. Input/Output, missing file, or network/permission error --.
                 except OSError as err:
-                    print(f"A different OS error occurred: {err}.")
+                    conf_vars.logger.error("A different OS error occurred: %s.", err)
     # File does NOT exist.
     else:
-        vars.logger.error(
-            'File Manager could not find Directory: "' + str(data_dir) + '"'
+        conf_vars.logger.error(
+            'File Manager could not find Directory: \"%s\"',
+            data_dir,
         )
 
 
 def file_copied_management(
     last_time: float,
     index: int,
-    vars: dict,
+    conf_vars: dict,
     year: int,
 ) -> datetime.datetime:
     """Copy files that arent past leniency times.
@@ -86,7 +88,7 @@ def file_copied_management(
     Args:
         last_time (float): Time of last copied file.
         index (int):       File iteration we're on when looping through directory.
-        vars (dict):       Data from config file.
+        conf_vars (dict):  Data from config file.
         year (int):        Year of the file creation.
 
     Returns:
@@ -94,11 +96,11 @@ def file_copied_management(
             returns the current local date and time as a datetime object.
             returns exit code.
     """
-    dest_dir = vars.paths[index].get(vars.dest_dir)
-    data_dir = vars.paths[index].get(vars.message_dir)
+    dest_dir = conf_vars.paths[index].get(conf_vars.dest_dir)
+    data_dir = conf_vars.paths[index].get(conf_vars.message_dir)
 
     # Add _year to directory if needed based on config.
-    if vars.paths[index].get(vars.year):
+    if conf_vars.paths[index].get(conf_vars.year):
         data_dir = str(data_dir) + "_" + str(year)
         dest_dir = str(dest_dir) + "_" + str(year)
 
@@ -114,10 +116,9 @@ def file_copied_management(
         # Destination does NOT exists for output directory so create it.
         if not os.path.exists(dest_dir):
             os.makedirs(dest_dir)
-            vars.logger.error(
-                "Destination Directory ["
-                + str(dest_dir)
-                + "] did NOT exist and was created"
+            conf_vars.logger.error(
+                "Destination Directory \"%s\" did NOT exist and was created",
+                dest_dir,
             )
 
         # Go through the files and get the creation time from each one.
@@ -132,59 +133,58 @@ def file_copied_management(
                     # Try and copy the file since it passed all checks.
                     try:
                         shutil.copy(t_file, dest_dir)
-                        vars.logger.debug(
-                            'File: "'
-                            + str(t_file)
-                            + '" copied to "'
-                            + str(dest_dir)
-                            + '"'
+                        conf_vars.logger.debug(
+                            'File: \"%s\" copied to \"%s\"',
+                            t_file, 
+                            dest_dir,
                         )
                         copied = True
                     # Not copied for some other reason.
                     except Exception:
-                        vars.logger.error("Could NOT copy file")
+                        conf_vars.logger.error("Could NOT copy file")
                         return [datetime.datetime.now(), 0]
                 else:
                     # Return 0 for failed.
-                    vars.logger.debug(
-                        "Permission Denied to read File: [" + str(t_file) + "]"
+                    conf_vars.logger.debug(
+                        'Permission Denied to read File: \"%s\"',
+                        t_file,
                     )
                     return [last_time, 0]
     # Folder does NOT exist.
     else:
         # Return 0 for failed.
-        vars.logger.error('Data Directory "' + str(data_dir) + '" does NOT Exist')
+        conf_vars.logger.error('Data Directory \"%s\" does NOT Exist', data_dir)
         return [last_time, 0]
 
     # Files were not copied.
     if not copied:
         # Return 1 for Degraded.
-        vars.logger.warning('No New Files to Copy in "' + str(data_dir) + '"')
+        conf_vars.logger.warning('No New Files to Copy in \"%s\"', data_dir)
         return [datetime.datetime.now(), 1]
 
     # Set the new previous time to compare to in next run return 2 for Nominal.
     return [datetime.datetime.now(), 2]
 
 
-def thread_daemon(vars: FileManagerInit, comms: Communications) -> None:
+def thread_daemon(conf_vars: FileManagerInit, comms: Communications) -> None:
     """Main thread that does main logic.
 
     Args:
-        vars (FileManagerInit):  Get File manager setup class object.
+        conf_vars (FileManagerInit):  Get File manager setup class object.
         comms (Communications): Handles recieving and sending messages using ports class object.
     """
     # initialize variables.
-    periodicity = vars.configs.get(vars.freq_checks)
-    last_time = [0 for i in vars.paths]
-    b_status = [False for i in vars.paths]
+    periodicity = conf_vars.configs.get(conf_vars.freq_checks)
+    last_time = [0 for i in conf_vars.paths]
+    b_status = [False for i in conf_vars.paths]
     status_good = True
 
-    for path in range(len(vars.paths)):
+    for path in range(len(conf_vars.paths)):
         # initialize time to compare files to, for copy management.
         last_time[path] = datetime.datetime.min
 
         # Going to be our health variable to send to APP 2 SUCCESS, 1 DEGRADED, 0 FAIL.
-        b_status[path] = vars.green
+        b_status[path] = conf_vars.green
 
     # Control flow statement used to create an infinite loop.
     while True:
@@ -199,44 +199,44 @@ def thread_daemon(vars: FileManagerInit, comms: Communications) -> None:
                 comms.ran_once = False
 
             # Find out if all directories are red.
-            for path in range(len(vars.paths)):
-                if b_status[path] == vars.red and not status_good:
+            for path in range(len(conf_vars.paths)):
+                if b_status[path] == conf_vars.red and not status_good:
                     status_good = False
                 else:
                     status_good = True
 
             # If we have at least one non red directory we still run.
             if status_good:
-                for path in range(len(vars.paths)):
+                for path in range(len(conf_vars.paths)):
                     # Delete outdated files and copy new ones.
-                    file_retention_management(path, vars, current_time.year)
+                    file_retention_management(path, conf_vars, current_time.year)
                     last_time[path], b_status[path] = file_copied_management(
                         last_time[path],
                         path,
-                        vars,
+                        conf_vars,
                         current_time.year,
                     )
 
                 # Send message to HSD.
-                comms.send_proto(b_status, vars)
+                comms.send_proto(b_status, conf_vars)
 
                 # Time to wait until the next loop iteration.
-                time.sleep(periodicity * vars.seconds_per_min)
+                time.sleep(periodicity * conf_vars.seconds_per_min)
 
             else:
                 # One or both directories have something wrong with them and check every 10 seconds to see if it should run again.
-                vars.logger.error("APP Status is RED Attempting to rerun!!!")
-                time.sleep(vars.failure_period_time)
+                conf_vars.logger.error("APP Status is RED Attempting to rerun!!!")
+                time.sleep(conf_vars.failure_period_time)
         else:
             # Set it to not run over and over.
             if not comms.ran_once:
                 # Not Primary so it will check every 10 seconds to see if it should run again.
-                vars.logger.debug(
-                    'APP IS NOT PRIMARY, AND NOT RUNNING... Listening for ["isprimary"] message'
+                conf_vars.logger.debug(
+                    'APP IS NOT PRIMARY, AND NOT RUNNING... Listening for [\"isprimary\"] message'
                 )
                 comms.ran_once = True
 
-            time.sleep(vars.failure_period_time)
+            time.sleep(conf_vars.failure_period_time)
 
 
 def main():

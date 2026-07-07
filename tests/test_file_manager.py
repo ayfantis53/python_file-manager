@@ -103,7 +103,7 @@ class TestCopy(unittest.TestCase):
     def test_first_data(self):
         """Test all borep files were copied correctly."""
         print("TESTED BOREP COPY FUNCTIONALITY")
-        
+
         # Setup time.
         current_time = datetime.now()
         last_time_first = datetime.min
@@ -132,7 +132,7 @@ class TestCopy(unittest.TestCase):
         # Setup time.
         current_time = datetime.now()
         last_time_eph = datetime.min
-        
+
         # Create directories with test files to copy.
         self.test_data_create("./tests/test_data/Data_next_2026", 3)
         self.test_data_create("./tests/test_data/Dest_next_2026", 0)
@@ -159,7 +159,7 @@ class TestRetention(unittest.TestCase):
     def test_first_retention(self):
         """Test we are deleting outdated borep files correctly."""
         print("TESTED BOREP RETENTION FUNCTIONALITY")
-        
+
         # Setup time.
         current_time = datetime.now()
 
