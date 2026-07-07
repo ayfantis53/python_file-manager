@@ -36,7 +36,10 @@ class LogManager:
 
         # Create logfile path destination.
         logging.basicConfig(
-            filename=str(logfile_destination) + "file_manager.log", level=logging.DEBUG
+            filename=str(logfile_destination) + "file_manager.log",
+            level=logging.DEBUG,
+            filemode="a",  # 'a' to append, 'w' to overwrite each run
+            format="%(asctime)s - %(levelname)s - %(message)s",
         )
 
         # initialize logger.
