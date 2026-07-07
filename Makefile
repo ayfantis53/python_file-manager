@@ -13,6 +13,13 @@
 
 TAG?="local-build"
 
+# If Windows need python -m prefix.
+ifeq ($(OS), Windows_NT)
+    OS_PRE = python -m 
+else
+	OS_PRE?=""
+endif
+
 
 # ===========
 # TARGETS.
@@ -22,15 +29,17 @@ TAG?="local-build"
 
 # linting.
 check:
-	ruff check .
+	${OS_PRE}ruff check .
 fix:
-	ruff check --fix .
+	${OS_PRE}ruff check --fix .
 format:
-	ruff format .
+	${OS_PRE}ruff format .
 
 # testing.
+server:
+	${OS_PRE}uv run src/utils/server.py
 test:
-	uv run pytest
+	${OS_PRE}uv run pytest
 # Run App.
 run:
 	docker run --rm -it --entrypoint=bash file_manager:${TAG}
