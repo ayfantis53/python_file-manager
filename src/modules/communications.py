@@ -11,6 +11,7 @@ class Communications:
     Attributes:
         mutex (Lock)       synchronization primitive object designed to handle mutual exclusion.
         is_primary (bool): Tells us if we should be sending messaged or not.
+        ran_once (bool):   Tells us if we should print a not running message again.
     """
 
     def __init__(self, mutex: Lock) -> None:
@@ -21,6 +22,7 @@ class Communications:
         """
         self.mutex = mutex
         self.is_primary = True
+        self.ran_once = False
 
     def rec_proto(self, vars) -> None:
         """Connect to Socket and Receive Protobuf Message."""

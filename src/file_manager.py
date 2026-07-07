@@ -93,13 +93,13 @@ def file_copied_management(
             returns the current local date and time as a datetime object.
             returns exit code.
     """
-    nas_dir = vars.paths[index].get(vars.nas_dir)
+    dest_dir = vars.paths[index].get(vars.dest_dir)
     data_dir = vars.paths[index].get(vars.message_dir)
 
     # Add _year to directory if needed based on config.
     if vars.paths[index].get(vars.year):
         data_dir = str(data_dir) + "_" + str(year)
-        nas_dir = str(nas_dir) + "_" + str(year)
+        dest_dir = str(dest_dir) + "_" + str(year)
 
     # Any files Copied?
     copied = False
@@ -110,15 +110,14 @@ def file_copied_management(
 
     # make sure files exists and that it wasnt previously copied in the last run.
     if os.path.exists(data_dir):
-        vars.logger.debug("Data Directory [" + str(data_dir) + "] exists")
-
-        # Destination exists for output directory.
-        if os.path.exists(nas_dir):
-            vars.logger.debug("Destination Directory [" + str(nas_dir) + "] exists")
         # Destination does NOT exists for output directory so create it.
-        else:
-            os.makedirs(nas_dir)
-            vars.logger.error("NAS Directory [" + str(nas_dir) + "] created")
+        if not os.path.exists(dest_dir):
+            os.makedirs(dest_dir)
+            vars.logger.error(
+                "Destination Directory ["
+                + str(dest_dir)
+                + "] did NOT exist and was created"
+            )
 
         # Go through the files and get the creation time from each one.
         for t_file in l_msgfiles:
@@ -129,19 +128,15 @@ def file_copied_management(
             if last_time <= t_mod:
                 # Do we have permission to copy this file.
                 if os.access(t_file, os.R_OK):
-                    vars.logger.debug(
-                        "Permission to read File: [" + str(t_file) + "] good"
-                    )
-
                     # Try and copy the file since it passed all checks.
                     try:
-                        shutil.copy(t_file, nas_dir)
+                        shutil.copy(t_file, dest_dir)
                         vars.logger.debug(
-                            "File: ["
+                            'File: "'
                             + str(t_file)
-                            + "] copied to ["
-                            + str(nas_dir)
-                            + "]"
+                            + '" copied to "'
+                            + str(dest_dir)
+                            + '"'
                         )
                         copied = True
                     # Not copied for some other reason.
@@ -154,16 +149,16 @@ def file_copied_management(
                         "Permission Denied to read File: [" + str(t_file) + "]"
                     )
                     return [last_time, 0]
-    # File does NOT exist.
+    # Folder does NOT exist.
     else:
         # Return 0 for failed.
-        vars.logger.error("[" + str(data_dir) + "] Folder doesnt Exist")
+        vars.logger.error("Data Directory [" + str(data_dir) + "] does NOT Exist")
         return [last_time, 0]
 
     # Files were not copied.
     if not copied:
         # Return 1 for Degraded.
-        vars.logger.warning("No New Files to Copy in [" + str(data_dir) + "]")
+        vars.logger.warning('No New Files to Copy in "' + str(data_dir) + '"')
         return [datetime.datetime.now(), 1]
 
     # Set the new previous time to compare to in next run return 2 for Nominal.
@@ -197,15 +192,11 @@ def thread_daemon(vars: FileManagerInit, comms: Communications) -> None:
 
         print("Current time : {0}".format(current_time))
 
-        vars.logger.info(
-            "-------------------------------------------------------------------------------------------"
-        )
-        vars.logger.info(
-            str(current_time)
-            + "----------------------------------------------------------------"
-        )
-
         if comms.is_primary:
+            # Set it back to initial.
+            if comms.ran_once:
+                comms.ran_once = False
+
             # Find out if all directories are red.
             for path in range(len(vars.paths)):
                 if b_status[path] == vars.red and not status_good:
@@ -236,10 +227,14 @@ def thread_daemon(vars: FileManagerInit, comms: Communications) -> None:
                 vars.logger.error("APP Status is RED Attempting to rerun!!!")
                 time.sleep(vars.failure_period_time)
         else:
-            # Not Primary so it will check every 10 seconds to see if it should run again.
-            vars.logger.debug(
-                "APP IS NOT PRIMARY, AND NOT RUNNING... Listening for isprimary message"
-            )
+            # Set it to not run over and over.
+            if not comms.ran_once:
+                # Not Primary so it will check every 10 seconds to see if it should run again.
+                vars.logger.debug(
+                    'APP IS NOT PRIMARY, AND NOT RUNNING... Listening for ["isprimary"] message'
+                )
+                comms.ran_once = True
+
             time.sleep(vars.failure_period_time)
 
 

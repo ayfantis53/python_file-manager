@@ -65,6 +65,16 @@ uv run pytest tests/test_file_manager.py::TestJSON::test_json_SUCCESS
 
 ### Running App Locally
 
+> Initialize some data.
+```bash
+# Run in 1st terminal.
+make server
+
+# Run in 2nd terminal.
+make test
+```
+
+> Now we can run our actual app
 ```bash
 # Run in 1st terminal.             (Windows)
 uv run src/utils/server.py     ||  python -m  uv run src/utils/server.py    || make server

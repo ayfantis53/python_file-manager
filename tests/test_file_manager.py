@@ -46,9 +46,9 @@ class TestJSON(unittest.TestCase):
             FILE_MANAGER_INIT,
         )
         result_2 = self.test_json_setup_path_vars(
-            "./test/test_data/Data_borep",
+            "./test/test_data/Data_first",
             1,
-            "./test/test_data/Data_ep",
+            "./test/test_data/Data_next",
             1,
             FILE_MANAGER_INIT,
         )
@@ -100,12 +100,12 @@ class TestCopy(unittest.TestCase):
         current_time = datetime.now()
 
         last_time_bore = datetime.min
-        self.test_data_create("./tests/test_data/Data_borep", 3)
-        self.test_data_create("./tests/test_data/NAS_bore", 0)
+        self.test_data_create("./tests/test_data/Data_first", 3)
+        self.test_data_create("./tests/test_data/Dest_first", 0)
 
         result = self.test_file_copied_management(
             "DATA_DIR",
-            "./tests/test_data/Data_borep",
+            "./tests/test_data/Data_first",
             last_time_bore,
             0,
             current_time.year,
@@ -120,12 +120,12 @@ class TestCopy(unittest.TestCase):
         current_time = datetime.now()
 
         last_time_eph = datetime.min
-        self.test_data_create("./tests/test_data/Data_ep_2026", 3)
-        self.test_data_create("./tests/test_data/NAS_eph_2026", 0)
+        self.test_data_create("./tests/test_data/Data_next_2026", 3)
+        self.test_data_create("./tests/test_data/Dest_next_2026", 0)
 
         result = self.test_file_copied_management(
             "DATA_DIR",
-            "./tests/test_data/Data_ep_2026",
+            "./tests/test_data/Data_next_2026",
             last_time_eph,
             1,
             current_time.year,

@@ -128,19 +128,19 @@ def test_file_copied_management(
     """
     data = file_manager_init.json_parse("DATA_PATHS")
 
-    nas = data[index].get("NAS_DIR")
+    dest_dir = data[index].get("DEST_DIR")
     eph_data = data[1].get(data_dir)
 
     # Add _year to directory if needed based on config.
     if data[index].get(file_manager_init.year):
-        nas = str(nas) + "_" + str(year)
+        dest_dir = str(dest_dir) + "_" + str(year)
     eph_data = str(eph_data) + "_" + str(year)
 
     # Run copy function from file_manager.
     file_copied_management(last_time, index, file_manager_init, year)
 
     # Compare both directories.
-    comparison = filecmp.dircmp(dir, nas)
+    comparison = filecmp.dircmp(dir, dest_dir)
 
     left_only_files = ",".join(comparison.left_only)
     right_only_files = ",".join(comparison.right_only)

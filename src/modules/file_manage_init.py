@@ -18,7 +18,7 @@ class FileManagerInit:
         green (int):               Integer representation of good health.
         data_dir (str | Path):     directories of all data to be copied over and managed.
         conf (str | Path):         path of config file.
-        nas_dir (str | Path):      path of NAS directory.
+        dest_dir (str | Path):      path of Destination directory.
         log_file (str | Path):     path of log file.
         message_dir (str | Path):  path of message directory.
         year (int):                year of files creations.
@@ -45,7 +45,7 @@ class FileManagerInit:
         self.conf = "CONFIG_VARS"
 
         # Config variables
-        self.nas_dir = "NAS_DIR"
+        self.dest_dir = "DEST_DIR"
         self.log_file = "LOGFILE_PATH"
         self.message_dir = "DATA_DIR"
         self.year = "YEAR"
