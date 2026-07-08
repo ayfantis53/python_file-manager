@@ -67,9 +67,6 @@ RUN dnf install -v --setopt=install_weak_deps=False -y --nogpgcheck \
         python${PYTHON_VERSION} \
         python${PYTHON_VERSION}-devel \
         python${PYTHON_VERSION}-pip \
-        protobuf \
-        protobuf-compiler \
-        gcc-c++ \
     # Cleanup.
     && dnf -q clean all \
     && rm -rf /var/cache/dnf/* \
@@ -101,7 +98,6 @@ WORKDIR /opt/app
 
 # Verify installation.
 RUN uv --version \
-    && protoc --version \
     && uv pip show protobuf
 
 # dump a Python traceback to standard error (stderr) when a fatal crash occurs, such as a segmentation fault (segfault).
