@@ -4,8 +4,6 @@ and define hook functions across multiple test files."""
 # Standard Library imports
 import datetime
 import filecmp
-import glob
-import os
 from pathlib import Path
 
 # Third-party imports
@@ -206,13 +204,9 @@ def test_file_retention_management(
     current_time = datetime.datetime.now()
     retention_time = current_time - datetime.timedelta(minutes=leniency_time)
 
-    # Retrieves a list of all file and folder paths located directly inside the data_dir directory.
-    msgfiles = os.path.join(data_dir, "*")
-    l_msgfiles = glob.glob(msgfiles)
-
     # Iterate files, get the raw Unix timestamp & convert POSIX/Unix timestamp to human readable.
-    for m_file in l_msgfiles:
-        t_mod = os.path.getmtime(m_file)
+    for m_file in Path(data_dir).glob("*"):
+        t_mod = m_file.stat().st_mtime
         t_mod = datetime.datetime.fromtimestamp(t_mod)
 
         # Retention time is greater than time modified.

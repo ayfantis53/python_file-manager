@@ -18,7 +18,7 @@ class FileManagerInit:
         green (int):               Integer representation of good health.
         data_dir (str | Path):     directories of all data to be copied over and managed.
         conf (str | Path):         path of config file.
-        dest_dir (str | Path):      path of Destination directory.
+        dest_dir (str | Path):     path of Destination directory.
         log_file (str | Path):     path of log file.
         message_dir (str | Path):  path of message directory.
         year (int):                year of files creations.

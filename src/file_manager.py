@@ -2,7 +2,7 @@
 
 # Standard lib imports
 import datetime
-import glob
+from pathlib import Path
 import os
 import shutil
 import sys
@@ -35,27 +35,23 @@ def file_retention_management(index: int, conf_vars: dict, year: int) -> None:
         data_dir = str(data_dir) + "_" + str(year)
 
     # File exists and that it wasnt previously copied in the last run.
-    if os.path.exists(data_dir):
+    if Path(data_dir).exists():
         leniency_time = conf_vars.paths[index].get("LENIENCY")
 
         # turning leniency time in minutes to a datetime format to be compared.
         current_time = datetime.datetime.now()
         retention_time = current_time - datetime.timedelta(minutes=leniency_time)
 
-        # Looking through a directory and putting files into an array.
-        msgfiles = os.path.join(data_dir, "*")
-        l_msgfiles = glob.glob(msgfiles)
-
         # Go through the files and get the creation time from each one.
-        for m_file in l_msgfiles:
-            t_mod = os.path.getmtime(m_file)
+        for m_file in Path(data_dir).glob("*"):
+            t_mod = m_file.stat().st_mtime
             t_mod = datetime.datetime.fromtimestamp(t_mod)
 
             # Is the file older than the current time - retention time.
             if retention_time > t_mod:
                 # -- Attempt to delete a specific file path from the filesystem --.
                 try:
-                    os.remove(m_file)
+                    m_file.unlink()
                     conf_vars.logger.info(
                         'File ["%s"] deleted because it was outdated',
                         m_file,
@@ -109,23 +105,19 @@ def file_copied_management(
     # Any files Copied?
     copied = False
 
-    # Looking through the directory and putting files into an array.
-    msgfiles = os.path.join(data_dir, "*")
-    l_msgfiles = glob.glob(msgfiles)
-
     # make sure files exists and that it wasnt previously copied in the last run.
-    if os.path.exists(data_dir):
+    if Path(data_dir).exists:
         # Destination does NOT exists for output directory so create it.
-        if not os.path.exists(dest_dir):
-            os.makedirs(dest_dir)
+        if not Path(dest_dir).exists:
+            dest_dir.mkdir(parents=True, exist_ok=True)
             conf_vars.logger.error(
                 'Destination Directory "%s" did NOT exist and was created',
                 dest_dir,
             )
 
         # Go through the files and get the creation time from each one.
-        for t_file in l_msgfiles:
-            t_mod = os.path.getmtime(t_file)
+        for t_file in Path(data_dir).glob("*"):
+            t_mod = t_file.stat().st_mtime
             t_mod = datetime.datetime.fromtimestamp(t_mod)
 
             # make sure file wasnt copied previously in the last run.
