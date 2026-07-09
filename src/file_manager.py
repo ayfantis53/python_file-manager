@@ -147,7 +147,10 @@ def file_copied_management(
     # Folder does NOT exist.
     else:
         # Return 0 for failed.
-        conf_vars.logger.error('Data Directory "%s" does NOT Exist, Could NOT copy files.', data_dir)
+        conf_vars.logger.error(
+            'Data Directory "%s" does NOT Exist, Could NOT copy files.',
+            data_dir,
+        )
         return [last_time, 0]
 
     # Files were not copied.
