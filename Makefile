@@ -66,7 +66,9 @@ run:
 # ===========
 
 # .PHONY tells Make that 'clean' is not a physical file.
-.PHONY: clean clean-docker help
+.PHONY: clean-all clean clean-docker help
+
+clean-all: clean clean-docker
 
 # Clean up build artifacts.
 clean:

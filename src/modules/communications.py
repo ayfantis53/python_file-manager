@@ -58,6 +58,7 @@ class Communications:
                 # Is primary.
                 if message_isPrimary == "isprimary":
                     self.is_primary = True
+                    conf_vars.logger.info("is NOW primary.")
                 # Is NOT primary.
                 else:
                     self.is_primary = False
