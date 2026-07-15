@@ -64,6 +64,7 @@ COPY pyproject.toml uv.lock Makefile /opt/app/
 # Install behave compiler and development libraries.
 RUN dnf install -v --setopt=install_weak_deps=False -y --nogpgcheck \
         make \
+        ncurses \
         python${PYTHON_VERSION} \
         python${PYTHON_VERSION}-devel \
         python${PYTHON_VERSION}-pip \
