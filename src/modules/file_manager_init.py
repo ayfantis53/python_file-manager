@@ -6,7 +6,7 @@ from pathlib import Path
 import socket
 
 # Local imports
-from modules.log_manager import LogManager
+from modules.log_manager import log_setup
 
 
 class FileManagerInit:
@@ -62,8 +62,7 @@ class FileManagerInit:
 
         # get logfile configured.
         self.logfile_txt = self.configs.get(self.log_file)
-        self.log_manager = LogManager(self.logfile_txt)
-        self.logger = self.log_manager.log_setup(self.logfile_txt)
+        self.logger = log_setup(self.logfile_txt)
 
         # connect to socket once initialized.
         self.port = self.configs.get("PORT")
